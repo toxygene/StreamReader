@@ -1,0 +1,15 @@
+{
+    "name": "toxygene/stream-reader",
+    "authors": [
+        {
+            "name": "Justin Hendrickson",
+            "email": "justin.hendrickson@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Toxygene\\StreamReader\\": "src"
+        }
+    }
+}
