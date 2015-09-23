@@ -1,9 +1,12 @@
 <phpunit
-    bootstrap="tests/bootstrap.php"
-    colors="true">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.5/phpunit.xsd"
+    bootstrap="vendor/autoload.php"
+    colors="true"
+    forceCoversAnnotation="false">
     <testsuites>
-        <testsuite name="Stream reader test suite">
-            <director>tests</director>
+        <testsuite name="Stream Reader test suite">
+            <directory>tests</directory>
         </testsuite>
     </testsuites>
 </phpunit>

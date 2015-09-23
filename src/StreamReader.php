@@ -6,7 +6,7 @@ namespace Toxygene\StreamReader;
  *
  * @package Toxygene\StreamReader
  */
-class SimpleStreamReader extends AbstractStreamReader
+class StreamReader extends AbstractStreamReader
 {
 
     /**
