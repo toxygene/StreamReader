@@ -1,0 +1,9 @@
+<phpunit
+    bootstrap="tests/bootstrap.php"
+    colors="true">
+    <testsuites>
+        <testsuite name="Stream reader test suite">
+            <director>tests</director>
+        </testsuite>
+    </testsuites>
+</phpunit>
