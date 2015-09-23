@@ -8,7 +8,7 @@ use SplQueue;
  * Class StreamReaderPeekableDecorator
  * @package Toxygene\StreamReader
  */
-class PeekableStreamReaderDecorator extends AbstractStreamReader
+class PeekableStreamReaderDecorator extends AbstractStreamReader implements PeekableStreamReaderInterface
 {
 
     /**
@@ -66,6 +66,17 @@ class PeekableStreamReaderDecorator extends AbstractStreamReader
     }
 
     /**
+     * Reset the peek offset
+     *
+     * @return $this
+     */
+    public function resetPeek()
+    {
+        $this->peekOffset = 0;
+        return $this;
+    }
+
+    /**
      * Read the stream to the peek counter
      *
      * @return string
@@ -109,17 +120,6 @@ class PeekableStreamReaderDecorator extends AbstractStreamReader
         $this->peekOffset = $n;
 
         return $chars;
-    }
-
-    /**
-     * Reset the peek offset
-     *
-     * @return $this
-     */
-    public function resetPeek()
-    {
-        $this->peekOffset = 0;
-        return $this;
     }
 
 }
