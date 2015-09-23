@@ -30,6 +30,14 @@ class StreamReaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tear down the test case
+     */
+    public function tearDown()
+    {
+        unset($this->reader);
+    }
+
+    /**
      * @covers ::readChar
      */
     public function testCharactersCanBeRead()
@@ -51,14 +59,22 @@ class StreamReaderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers ::readChars
+     * @covers ::isEmpty
      */
-    public function testMultipleCharactersCanBeRead()
+    public function testStreamEmptyCanBeChecked()
     {
-        $this->assertEquals(
-            '012345',
-            $this->reader->readChars(6)
-        );
+        $this->assertFalse($this->reader->isEmpty());
+        $this->reader->readChar();
+        $this->reader->readChar();
+        $this->reader->readChar();
+        $this->reader->readChar();
+        $this->reader->readChar();
+        $this->reader->readChar();
+        $this->reader->readChar();
+        $this->reader->readChar();
+        $this->reader->readChar();
+        $this->reader->readChar();
+        $this->assertTrue($this->reader->isEmpty());
     }
 
 }
