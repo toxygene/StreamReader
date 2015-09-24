@@ -5,6 +5,13 @@ interface PeekableStreamReaderInterface extends StreamReaderInterface
 {
 
     /**
+     * Check if there are no more characters available to peek at
+     *
+     * @return boolean
+     */
+    public function isPeekEmpty();
+
+    /**
      * Read the stream to the peek counter
      *
      * @return string
@@ -17,7 +24,7 @@ interface PeekableStreamReaderInterface extends StreamReaderInterface
      * @param integer $count
      * @return string
      */
-    public function peek($count);
+    public function peek($count = 1);
 
     /**
      * Reset the peek offset
