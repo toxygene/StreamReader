@@ -110,7 +110,7 @@ class PeekableStreamReaderDecoratorTest extends \PHPUnit_Framework_TestCase
     public function testCharactersCanBeReadUpToTheCurrentPeek()
     {
         $this->reader->peek(3);
-        
+
         $this->assertEquals(
             '012',
             $this->reader->readCharsToPeek()
