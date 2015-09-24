@@ -1,5 +1,5 @@
 <?php
-use Toxygene\StreamReader\SimpleStreamReader;
+use Toxygene\StreamReader\StreamReader;
 use Toxygene\StreamReader\PeekableStreamReaderDecorator;
 
 require_once 'vendor/autoload.php';
@@ -9,7 +9,7 @@ fwrite($stream, '0123456789');
 fseek($stream, 0);
 
 $reader = new PeekableStreamReaderDecorator(
-    new SimpleStreamReader($stream)
+    new StreamReader($stream)
 );
 
 while (!$reader->isEmpty()) {
