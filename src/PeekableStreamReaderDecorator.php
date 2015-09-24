@@ -92,7 +92,7 @@ class PeekableStreamReaderDecorator extends AbstractStreamReader implements Peek
      * @param integer $count
      * @return string
      */
-    public function peek($count)
+    public function peek($count = 1)
     {
         $advance = max(
             0,

@@ -17,7 +17,7 @@ interface PeekableStreamReaderInterface extends StreamReaderInterface
      * @param integer $count
      * @return string
      */
-    public function peek($count);
+    public function peek($count = 1);
 
     /**
      * Reset the peek offset
