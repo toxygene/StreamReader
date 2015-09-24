@@ -54,6 +54,14 @@ class PeekableStreamReaderDecorator extends AbstractStreamReader implements Peek
     /**
      * {@inheritdoc}
      */
+    public function isPeekEmpty()
+    {
+        return $this->streamReader->isEmpty();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function readChar()
     {
         $this->resetPeek();
