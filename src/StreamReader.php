@@ -10,6 +10,13 @@ class StreamReader extends AbstractStreamReader
 {
 
     /**
+     * Stream
+     *
+     * @var resource
+     */
+    protected $stream;
+
+    /**
      * Constructor
      *
      * @param resource $stream
@@ -17,6 +24,14 @@ class StreamReader extends AbstractStreamReader
     public function __construct($stream)
     {
         $this->stream = $stream;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function close()
+    {
+        return true;
     }
 
     /**

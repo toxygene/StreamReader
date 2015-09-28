@@ -10,6 +10,13 @@ interface StreamReaderInterface
 {
 
     /**
+     * Close the stream
+     * 
+     * @return boolean
+     */
+    public function close();
+
+    /**
      * Check if the stream is empty
      *
      * @return boolean
