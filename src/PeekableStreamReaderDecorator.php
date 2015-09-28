@@ -46,6 +46,16 @@ class PeekableStreamReaderDecorator extends AbstractStreamReader implements Peek
     /**
      * {@inheritdoc}
      */
+    public function close()
+    {
+        $this->lookahead = new SplQueue();
+
+        return $this->streamReader->close();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function isEmpty()
     {
         return $this->lookahead->isEmpty() && $this->streamReader->isEmpty();
