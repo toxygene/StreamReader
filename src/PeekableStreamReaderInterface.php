@@ -5,6 +5,20 @@ interface PeekableStreamReaderInterface extends StreamReaderInterface
 {
 
     /**
+     * Get the current peek column number
+     *
+     * @var integer
+     */
+    public function getPeekColumnNumber();
+
+    /**
+     * Get the current peek line number
+     *
+     * @var integer
+     */
+    public function getPeekLineNumber();
+
+    /**
      * Check if there are no more characters available to peek at
      *
      * @return boolean
