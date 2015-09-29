@@ -20,8 +20,45 @@ class PeekableStreamReaderDecorator extends AbstractStreamReader implements Peek
 
     /**
      * Current peek offset
+     *
+     * @var integer
      */
     private $peekOffset = 0;
+
+    /**
+     * Current column number
+     *
+     * @var integer
+     */
+    private $columnNumber;
+
+    /**
+     * Current line number
+     *
+     * @var integer
+     */
+    private $lineNumber;
+
+    /**
+     * Peek column number
+     *
+     * @var integer
+     */
+    private $peekColumnNumber;
+
+    /**
+     * Peek line number
+     *
+     * @var integer
+     */
+    private $peekLineNumber;
+
+    /**
+     * Peek last character was line return
+     *
+     * @var boolean
+     */
+    private $peekWasLineReturn;
 
     /**
      * Stream reader being decorated
@@ -29,6 +66,11 @@ class PeekableStreamReaderDecorator extends AbstractStreamReader implements Peek
      * @var StreamReaderInterface
      */
     private $streamReader;
+
+    /**
+     * Last character was line return indicator
+     */
+    private $wasLineReturn = false;
 
     /**
      * Constructor
@@ -56,6 +98,42 @@ class PeekableStreamReaderDecorator extends AbstractStreamReader implements Peek
     /**
      * {@inheritdoc}
      */
+    public function getColumnNumber()
+    {
+        return $this->columnNumber;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLineNumber()
+    {
+        return $this->lineNumber;
+    }
+
+    /**
+     * Get the current peek column number
+     *
+     * @return integer
+     */
+    public function getPeekColumnNumber()
+    {
+        return $this->peekColumnNumber;
+    }
+
+    /**
+     * Get the current peek line number
+     *
+     * @return integer
+     */
+    public function getPeekLineNumber()
+    {
+        return $this->peekLineNumber;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function isEmpty()
     {
         return $this->lookahead->isEmpty() && $this->streamReader->isEmpty();
@@ -74,13 +152,42 @@ class PeekableStreamReaderDecorator extends AbstractStreamReader implements Peek
      */
     public function readChar()
     {
-        $this->resetPeek();
+        $char = $this->readNextChar();
 
-        if (!$this->lookahead->isEmpty()) {
-            return $this->lookahead->dequeue();
+        if ($this->wasLineReturn) {
+            ++$this->lineNumber;
+            $this->columnNumber = 0;
+            $this->wasLineReturn = false;
+        } elseif ($this->columnNumber === null && $this->lineNumber === null) {
+            $this->lineNumber = 1;
+            $this->columnNumber = 0;
+        } else {
+            ++$this->columnNumber;
         }
 
-        return $this->streamReader->readChar();
+        if ($char == "\n") {
+            $this->wasLineReturn = true;
+        }
+
+        $this->resetPeek();
+
+        return $char;
+    }
+
+    /**
+     * @return string
+     */
+    private function readNextChar()
+    {
+        if (!$this->lookahead->isEmpty()) {
+            $char = $this->lookahead
+                ->dequeue();
+        } else {
+            $char = $this->streamReader
+                ->readChar();
+        }
+
+        return $char;
     }
 
     /**
@@ -91,6 +198,10 @@ class PeekableStreamReaderDecorator extends AbstractStreamReader implements Peek
     public function resetPeek()
     {
         $this->peekOffset = 0;
+        $this->peekColumnNumber = $this->columnNumber;
+        $this->peekLineNumber = $this->lineNumber;
+        $this->peekWasLineReturn = $this->wasLineReturn;
+
         return $this;
     }
 
@@ -132,7 +243,21 @@ class PeekableStreamReaderDecorator extends AbstractStreamReader implements Peek
 
         $chars = '';
         for ($i = $this->peekOffset; $i < $n; ++$i) {
-            $chars .= $this->lookahead[$i];
+            $char = $this->lookahead[$i];
+
+            if ($this->peekWasLineReturn) {
+                ++$this->peekLineNumber;
+                $this->peekColumnNumber = 0;
+                $this->peekWasLineReturn = false;
+            } else {
+                ++$this->peekColumnNumber;
+            }
+
+            if ($char == "\n") {
+                $this->peekWasLineReturn = true;
+            }
+
+            $chars .= $char;
         }
 
         $this->peekOffset = $n;

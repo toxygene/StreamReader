@@ -19,15 +19,18 @@ class PeekableStreamReaderDecoratorTest extends \PHPUnit_Framework_TestCase
     private $reader;
 
     /**
+     * @var resource
+     */
+    private $stream;
+
+    /**
      * Setup the test case
      */
     public function setUp()
     {
-        $stream = fopen('php://memory', 'w+');
-        fwrite($stream, '0123456789');
-        fseek($stream, 0);
+        $this->stream = fopen('php://memory', 'w+');
 
-        $this->reader = new PeekableStreamReaderDecorator(new StreamReader($stream));
+        $this->reader = new PeekableStreamReaderDecorator(new StreamReader($this->stream));
     }
 
     /**
@@ -44,6 +47,8 @@ class PeekableStreamReaderDecoratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testStreamCanBePeekedAt()
     {
+        $this->setStreamContents('0123456789');
+
         $this->assertEquals(
             '0123',
             $this->reader->peek(4)
@@ -62,12 +67,20 @@ class PeekableStreamReaderDecoratorTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    private function setStreamContents($contents)
+    {
+        fwrite($this->stream, $contents);
+        fseek($this->stream, 0);
+    }
+
     /**
      * @covers ::peek
      * @covers ::readChar
      */
     public function testPeekIsResetAfterRead()
     {
+        $this->setStreamContents('0123456789');
+
         $this->assertEquals(
             '01',
             $this->reader->peek(2)
@@ -89,6 +102,8 @@ class PeekableStreamReaderDecoratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testCharactersCanBeReadWithoutPeekingFirst()
     {
+        $this->setStreamContents('0');
+
         $this->assertEquals(
             '0',
             $this->reader->readChar()
@@ -100,6 +115,8 @@ class PeekableStreamReaderDecoratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testStreamIsNotConsideredEmptyWhenPeeking()
     {
+        $this->setStreamContents('0123456789');
+
         $this->reader->peek(10);
         $this->assertFalse($this->reader->isEmpty());
     }
@@ -109,6 +126,8 @@ class PeekableStreamReaderDecoratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testCharactersCanBeReadUpToTheCurrentPeek()
     {
+        $this->setStreamContents('012');
+
         $this->reader->peek(3);
 
         $this->assertEquals(
@@ -123,12 +142,67 @@ class PeekableStreamReaderDecoratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testPeekingPastTheEndOfTheStreamReaderReturnsTheAvailableCharacters()
     {
+        $this->setStreamContents('0123456789');
+
         $this->assertEquals(
             '0123456789',
             $this->reader->peek(20)
         );
 
         $this->assertTrue($this->reader->isPeekEmpty());
+    }
+
+    /**
+     * @covers ::getPeekColumnNumber
+     * @covers ::getPeekLineNumber
+     */
+    public function testPeekColumnAndLineNumberAreCalculated()
+    {
+        $this->setStreamContents("12\n3\n45\n678");
+
+        $this->assertEquals('1', $this->reader->readChar());
+        $this->assertLineAndColumnNumber(1, 0);
+        $this->assertPeekLineAndColumnNumber(1, 0);
+
+        $this->assertEquals('2', $this->reader->readChar());
+        $this->assertLineAndColumnNumber(1, 1);
+        $this->assertPeekLineAndColumnNumber(1, 1);
+
+        $this->assertEquals("\n", $this->reader->peek());
+        $this->assertLineAndColumnNumber(1, 1);
+        $this->assertPeekLineAndColumnNumber(1, 2);
+
+        $this->assertEquals('3', $this->reader->peek());
+        $this->assertLineAndColumnNumber(1, 1);
+        $this->assertPeekLineAndColumnNumber(2, 0);
+
+        $this->assertEquals("\n", $this->reader->peek());
+        $this->assertLineAndColumnNumber(1, 1);
+        $this->assertPeekLineAndColumnNumber(2, 1);
+
+        $this->assertEquals('4', $this->reader->peek());
+        $this->assertLineAndColumnNumber(1, 1);
+        $this->assertPeekLineAndColumnNumber(3, 0);
+
+        $this->assertEquals("\n", $this->reader->readChar());
+        $this->assertLineAndColumnNumber(1, 2);
+        $this->assertPeekLineAndColumnNumber(1, 2);
+
+        $this->assertEquals('3', $this->reader->peek());
+        $this->assertLineAndColumnNumber(1, 2);
+        $this->assertPeekLineAndColumnNumber(2, 0);
+    }
+
+    private function assertLineAndColumnNumber($line, $column)
+    {
+        $this->assertEquals($line, $this->reader->getLineNumber());
+        $this->assertEquals($column, $this->reader->getColumnNumber());
+    }
+
+    private function assertPeekLineAndColumnNumber($line, $column)
+    {
+        $this->assertEquals($line, $this->reader->getPeekLineNumber());
+        $this->assertEquals($column, $this->reader->getPeekColumnNumber());
     }
 
 }
