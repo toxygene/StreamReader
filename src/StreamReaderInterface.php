@@ -17,20 +17,6 @@ interface StreamReaderInterface
     public function close();
 
     /**
-     * Get the current column number
-     *
-     * @return integer
-     */
-    public function getColumnNumber();
-
-    /**
-     * Get the current line number
-     *
-     * @return integer
-     */
-    public function getLineNumber();
-
-    /**
      * Check if the stream is empty
      *
      * @return boolean
