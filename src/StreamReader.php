@@ -31,7 +31,7 @@ class StreamReader extends AbstractStreamReader
      */
     public function close()
     {
-        return true;
+        return fclose($this->stream);
     }
 
     /**
