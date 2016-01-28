@@ -17,12 +17,4 @@ class UriStreamReader extends StreamReader
         parent::__construct(fopen($uri, $mode, $useIncludePath, $context));
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function close()
-    {
-        return fclose($this->stream) && parent::close();
-    }
-
 }
